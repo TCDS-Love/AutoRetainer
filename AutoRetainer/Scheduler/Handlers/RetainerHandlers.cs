@@ -288,40 +288,6 @@ internal unsafe static class RetainerHandlers
         return false;
     }
 
-    internal static bool? SetDepositGilAmountExact(int amount)
-    {
-        if (TryGetAddonByName<AtkUnitBase>("Bank", out var addon) && IsAddonReady(addon))
-        {
-            if (amount < 1) throw new ArgumentOutOfRangeException(nameof(amount), amount, "Amount must be 1 or higher");
-            var numGil = TaskDepositGil.Gil;
-            P.DebugLog($"Gil: {numGil}");
-            var gilToDeposit = (uint)numGil;
-            if (gilToDeposit > 0 && gilToDeposit <= numGil)
-            {
-                if (Utils.GenericThrottle)
-                {
-                    var v = stackalloc AtkValue[]
-                    {
-                        new() { Type = FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Int, Int = 3 },
-                        new() { Type = FFXIVClientStructs.FFXIV.Component.GUI.ValueType.UInt, UInt = gilToDeposit }
-                    };
-                    addon->FireCallback(2, v);
-                    P.DebugLog($"Set gil to deposit {gilToDeposit} (total: {numGil})");
-                    return true;
-                }
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            Utils.RethrottleGeneric();
-        }
-        return false;
-    }
-
     internal static bool? SwapBankMode()
     {
         if (TryGetAddonByName<AtkUnitBase>("Bank", out var addon) && IsAddonReady(addon))
@@ -429,29 +395,6 @@ internal unsafe static class RetainerHandlers
         }
         return false;
     }
-
-    internal static bool? CheckForErrorAssignedVenture(uint ventureID)
-    {
-        if (TryGetAddonByName<AddonRetainerTaskAsk>("RetainerTaskAsk", out var addon) && IsAddonReady(&addon->AtkUnitBase))
-        {
-            if (addon->AtkUnitBase.UldManager.NodeList[6]->IsVisible)
-            {
-                //An Error is on screen.
-                ClickRetainerTaskAsk.Using((IntPtr)addon).Return();
-                P.DebugLog($"Clicked cancel");
-                P.TaskManager.EnqueueImmediate(() => SelectSpecificVentureByName(ventureID), "SelectSpecificVenture");
-                P.TaskManager.DelayNextImmediate(10, false);
-                P.TaskManager.EnqueueImmediate(() => CheckForErrorAssignedVenture(ventureID), 500, false, "RedoErrorCheck");
-                return true;
-            }
-        }
-        else
-        {
-            Utils.RethrottleGeneric();
-        }
-        return false;
-    }
-
 
     /*public static bool? SearchVentureByName(uint id) => SearchVentureByName(VentureUtils.GetVentureName(id));
 

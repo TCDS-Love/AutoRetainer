@@ -17,13 +17,9 @@ internal static unsafe class DebugMisc
 
     internal static void Draw()
     {
-        if (ImGui.Button("Chill frames lock"))
+        if (Player.Available)
         {
-            FPSManager.LockChillFrames();
-        }
-        if (ImGui.Button("Unlock frames lock"))
-        {
-            FPSManager.UnlockChillFrames();
+
         }
         ImGui.Separator();
         ImGuiEx.Text($"CSFramework.Instance()->WindowInactive: {CSFramework.Instance()->WindowInactive}");

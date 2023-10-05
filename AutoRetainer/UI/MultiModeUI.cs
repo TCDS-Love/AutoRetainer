@@ -123,11 +123,11 @@ internal unsafe static class MultiModeUI
                 {
                     //ImGui.SameLine();
                     ImGui.SetNextItemWidth(150);
-                    if (ImGui.BeginCombo("##sindex", $"Service Account {data.ServiceAccount + 1}"))
+                    if (ImGui.BeginCombo("##sindex", $"服务器 {data.ServiceAccount + 1}"))
                     {
                         for (var i = 1; i <= 10; i++)
                         {
-                            if (ImGui.Selectable($"Service Account {i}"))
+                            if (ImGui.Selectable($"服务器 {i}"))
                             {
                                 data.ServiceAccount = i - 1;
                             }
@@ -206,16 +206,11 @@ internal unsafe static class MultiModeUI
                 ImGui.PushID(data.CID.ToString());
 
                 var storePos = ImGui.GetCursorPos();
-                var retainerData = data.RetainerData;
-                if (data.ShowRetainersInDisplayOrder)
+                for (var i = 0; i < data.RetainerData.Count; i++)
                 {
-                    retainerData = retainerData.OrderBy(x => x.DisplayOrder).ToList();
-                }
-                for (var i = 0; i < retainerData.Count; i++)
-                {
-                    if (bars.TryGetValue($"{data.CID}{retainerData[i].Name}", out var v))
+                    if (bars.TryGetValue($"{data.CID}{data.RetainerData[i].Name}", out var v))
                     {
-                        var ret = retainerData[i];
+                        var ret = data.RetainerData[i];
                         if (!ret.HasVenture || ret.Level == 0 || ret.Name.ToString().IsNullOrEmpty()) continue;
                         ImGui.SetCursorPos(v.start - ImGui.GetStyle().CellPadding with { Y = 0 });
                         ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 0xbb500000);
@@ -234,6 +229,11 @@ internal unsafe static class MultiModeUI
                     ImGui.TableSetupColumn("");
                     ImGui.TableHeadersRow();
                     var retainers = P.GetSelectedRetainers(data.CID);
+                    var retainerData = data.RetainerData;
+                    if (data.ShowRetainersInDisplayOrder)
+                    {
+                        retainerData = retainerData.OrderBy(x => x.DisplayOrder).ToList();
+                    }
                     for (var i = 0; i < retainerData.Count; i++)
                     {
                         var ret = retainerData[i];
@@ -299,7 +299,7 @@ internal unsafe static class MultiModeUI
                             }
                         }
                         var end = ImGui.GetCursorPos();
-                        bars[$"{data.CID}{retainerData[i].Name}"] = (start, end);
+                        bars[$"{data.CID}{data.RetainerData[i].Name}"] = (start, end);
                         ImGui.TableNextColumn();
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0);
 

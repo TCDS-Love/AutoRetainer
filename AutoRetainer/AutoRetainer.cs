@@ -56,7 +56,6 @@ public unsafe class AutoRetainer : IDalamudPlugin
 
     internal StyleModel Style;
     internal bool StylePushed = false;
-    internal RetainerListOverlay RetainerListOverlay;
 
     public AutoRetainer(DalamudPluginInterface pi)
     {
@@ -97,8 +96,7 @@ public unsafe class AutoRetainer : IDalamudPlugin
                 Utils.FixKeys();
 
                 ws.AddWindow(new MultiModeOverlay());
-                RetainerListOverlay = new RetainerListOverlay();
-                ws.AddWindow(RetainerListOverlay);
+                ws.AddWindow(new RetainerListOverlay());
                 LoginOverlay = (new LoginOverlay());
                 ws.AddWindow(LoginOverlay);
                 MultiMode.Init();
@@ -109,7 +107,6 @@ public unsafe class AutoRetainer : IDalamudPlugin
 
                 API = new();
                 ApiTest.Init();
-                FPSManager.UnlockChillFrames();
             });
         }
         //);
@@ -220,13 +217,21 @@ public unsafe class AutoRetainer : IDalamudPlugin
                 }
             }
         }
-        OfflineDataManager.Tick();
-        AutoGCHandin.Tick();
-        MultiMode.Tick();
-        NotificationHandler.Tick();
-        YesAlready.Tick();
-        Artisan.ArtisanTick();
-        FPSManager.Tick();
+
+        try
+        {
+            OfflineDataManager.Tick();
+            AutoGCHandin.Tick();
+            MultiMode.Tick();
+            NotificationHandler.Tick();
+            YesAlready.Tick();
+            Artisan.ArtisanTick();
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex.ToString());
+            throw;
+        }
         //if(C.RetryItemSearch) RetryItemSearch.Tick();
         if (SchedulerMain.PluginEnabled || MultiMode.Enabled || TaskManager.IsBusy)
         {
@@ -320,7 +325,6 @@ public unsafe class AutoRetainer : IDalamudPlugin
             Safe(Memory.Dispose);
             Safe(IPC.Shutdown);
             Safe(API.Dispose);
-            Safe(FPSManager.ForceRestore);
             PunishLibMain.Dispose();
             ECommonsMain.Dispose();
         }

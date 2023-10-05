@@ -4,7 +4,6 @@ using PunishLib.ImGuiMethods;
 using AutoRetainer.UI.Settings;
 using Dalamud.Interface.Style;
 using AutoRetainerAPI.Configuration;
-using AutoRetainerAPI;
 
 namespace AutoRetainer.UI;
 
@@ -39,7 +38,7 @@ unsafe internal class ConfigGui : Window
         {
             ImGui.BeginDisabled();
         }
-        if (ImGui.Checkbox($"Enable {P.Name}", ref e))
+        if (ImGui.Checkbox($"Enable {P.Name} (automatic mode)", ref e))
         {
             P.WasEnabled = false;
             if(e)
@@ -76,9 +75,7 @@ unsafe internal class ConfigGui : Window
             }
         }
 
-        Svc.PluginInterface.GetIpcProvider<object>(ApiConsts.OnMainControlsDraw).SendMessage();
-
-        if (IPC.Suppressed)
+        if(IPC.Suppressed)
         {
             ImGuiEx.Text(ImGuiColors.DalamudRed, $"Plugin operation is suppressed by other plugin.");
             ImGui.SameLine();

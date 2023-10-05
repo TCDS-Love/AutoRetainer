@@ -8,9 +8,8 @@ internal unsafe static class TaskDepositGil
     internal static bool forceCheck = false;
     static bool HasGil => Gil > 0 || forceCheck;
     internal static int Gil => InventoryManager.Instance()->GetInventoryItemCount(1);
-    internal static void Enqueue(int percent, bool isGilAmount = false)
+    internal static void Enqueue(int percent)
     {
-        Func<int, bool?> depFunc = isGilAmount ? RetainerHandlers.SetDepositGilAmountExact : RetainerHandlers.SetDepositGilAmount;
         P.TaskManager.Enqueue(YesAlready.WaitForYesAlreadyDisabledTask);
         if (C.RetainerMenuDelay > 0)
         {
@@ -20,7 +19,7 @@ internal unsafe static class TaskDepositGil
         P.TaskManager.Enqueue(() => HasGil == false ? true : GenericHandlers.Throttle(500));
         P.TaskManager.Enqueue(() => HasGil == false ? true : GenericHandlers.WaitFor(500));
         P.TaskManager.Enqueue(() => HasGil == false ? true : RetainerHandlers.SwapBankMode());
-        P.TaskManager.Enqueue(() => HasGil == false ? true : depFunc(percent));
+        P.TaskManager.Enqueue(() => HasGil == false ? true : RetainerHandlers.SetDepositGilAmount(percent));
         P.TaskManager.Enqueue(() => HasGil == false ? true : RetainerHandlers.ProcessBankOrCancel());
         P.TaskManager.Enqueue(() => { forceCheck = false; return true; });
     }

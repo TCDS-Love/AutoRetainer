@@ -28,12 +28,6 @@ namespace AutoRetainer.Modules
             Svc.PluginInterface.GetIpcProvider<List<ulong>>("AutoRetainer.GetRegisteredCIDs").RegisterFunc(GetRegisteredCIDs);
             Svc.PluginInterface.GetIpcProvider<string, object>("AutoRetainer.RequestPostprocess").RegisterAction(RequestPostprocess);
             Svc.PluginInterface.GetIpcProvider<object>("AutoRetainer.FinishPostprocessRequest").RegisterAction(FinishPostprocessRequest);
-            Svc.PluginInterface.GetIpcProvider<string, object>(ApiConsts.OnRetainerListCustomTask).RegisterAction(OnRetainerListCustomTask);
-        }
-
-        private static void OnRetainerListCustomTask(string s)
-        {
-            P.RetainerListOverlay.PluginToProcess = s;
         }
 
         internal static void Shutdown()
@@ -50,7 +44,6 @@ namespace AutoRetainer.Modules
             Svc.PluginInterface.GetIpcProvider<List<ulong>>("AutoRetainer.GetRegisteredCIDs").UnregisterFunc();
             Svc.PluginInterface.GetIpcProvider<string, object>("AutoRetainer.RequestPostprocess").UnregisterAction();
             Svc.PluginInterface.GetIpcProvider<object>("AutoRetainer.FinishPostprocessRequest").UnregisterAction();
-            Svc.PluginInterface.GetIpcProvider<string, object>(ApiConsts.OnRetainerListCustomTask).UnregisterAction();
         }
 
         static void FinishPostprocessRequest()
